@@ -1,0 +1,65 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                                 True Range P MT4 |
+//|                                      Copyright © 2021 forexroboteasy.com |
+//|                                        Developed by Forex Robot Easy Team |
+//+------------------------------------------------------------------+
+
+// Include necessary libraries and indicators
+#include <Trade\Trade.mqh>
+#include <Indicators\TrueRange.mqh>
+
+// Global variables
+CTrueRangePMT4 trueRangePMT4;
+CTrade trade;
+
+// Initialization function
+int OnInit()
+{
+    // Set up the True Range P MT4 indicator
+    trueRangePMT4.SetSymbol(Symbol());
+    trueRangePMT4.SetPeriod(Period());
+    
+    // Set up the trade module
+    trade.SetExpertMagicNumber(123456); // Set your own magic number
+    trade.SetDeviationInPoints(10); // Set your own deviation value
+    
+    return(INIT_SUCCEEDED);
+}
+
+// Deinitialization function
+void OnDeinit(const int reason)
+{
+    // Clean up resources
+    trueRangePMT4.Deinit();
+    trade.Deinit();
+}
+
+// Main trading function
+void OnTick()
+{
+    // Check if it's time to enter a trade
+    if (trueRangePMT4.CheckEntry())
+    {
+        // Place a buy or sell order based on the Smart Grid System
+        if (trueRangePMT4.IsBuySignal())
+        {
+            trade.Buy(0.1); // Set your own lot size
+        }
+        else if (trueRangePMT4.IsSellSignal())
+        {
+            trade.Sell(0.1); // Set your own lot size
+        }
+    }
+    
+    // Monitor open positions
+    trade.MonitorPositions();
+    
+    // Check if it's time to exit a trade
+    if (trade.HasOpenPositions() && trueRangePMT4.CheckExit())
+    {
+        trade.CloseAllPositions();
+    }
+}
+
+//+------------------------------------------------------------------+
